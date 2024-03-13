@@ -1,5 +1,5 @@
-from tkinter import N
-import numpy 
+import curses
+import numpy
 
 class Student:
     def __init__ (self, id, name, dob):
@@ -15,32 +15,33 @@ class Course:
         self.credit = credit
 
 class StudentMarkManagement:
-    def __init__(self):
+    def __init__(self, stdscr):
+        self.stdscr = stdscr
         self.students = []
         self.courses = []
         self.marks = {}
 
     def inputStudents(self): 
-        numStudents = int(input("Enter number of students: "))
+        numStudents = int(self.stdscr.getstr(0, 0, "Enter number of students: ").decode())
         for _ in range(numStudents):
-            id = input("Enter student id: ")
-            name = input("Enter student name: ")
-            dob = input("Enter student DOB: ")
+            id = self.stdscr.getstr(0, 0, "Enter student id: ").decode()
+            name = self.stdscr.getstr(0, 0, "Enter student name: ").decode()
+            dob = self.stdscr.getstr(0, 0, "Enter student DOB: ").decode()
             self.students.append(Student(id, name, dob))
 
     def inputCourses(self): 
-        numCourses = int(input("Enter number of courses: "))
+        numCourses = int(self.stdscr.getstr(0, 0, "Enter number of courses: ").decode())
         for _ in range(numCourses):
-            id = input("Enter course id: ")
-            name = input("Enter course name: ")
-            credit = int(input("Enter course credit: "))
+            id = self.stdscr.getstr(0, 0, "Enter course id: ").decode()
+            name = self.stdscr.getstr(0, 0, "Enter course name: ").decode()
+            credit = int(self.stdscr.getstr(0, 0, "Enter course credit: ").decode())
             self.courses.append(Course(id, name, credit))
 
     def inputMarks(self):
         for course in self.courses:
-            print(f"Entering marks for course {course.name}")
+            self.stdscr.addstr(0, 0, f"Entering marks for course {course.name}")
             for student in self.students:
-                mark = float(input(f"Enter mark for student {student.name}: "))
+                mark = float(self.stdscr.getstr(0, 0, f"Enter mark for student {student.name}: ").decode())
                 self.marks[(student.id, course.id)] = numpy.floor(mark * 10) / 10
 
     def calculateGPA(self):
@@ -56,27 +57,29 @@ class StudentMarkManagement:
             creditsArray = numpy.array(credits)
             student.gpa = numpy.average(marksArray, weights=creditsArray)
 
-
     def listStudents(self):
         gpas = numpy.array([student.gpa for student in self.students])
         sorted_indices = numpy.argsort(gpas)[::-1]
         for i in sorted_indices:
             student = self.students[i]
-            print(f"ID: {student.id}, Name: {student.name}, DOB: {student.dob}, GPA: {student.gpa}")
+            self.stdscr.addstr(i+1, 0, f"ID: {student.id}, Name: {student.name}, DOB: {student.dob}, GPA: {student.gpa}")
 
     def listCourses(self):
-        for course in self.courses:
-            print(f"ID: {course.id}, Name: {course.name}")
+        for i, course in enumerate(self.courses):
+            self.stdscr.addstr(i+1, 0, f"ID: {course.id}, Name: {course.name}")
 
     def showMarks(self):
-        for (student_id, course_id), mark in self.marks.items():
-            print(f"Student {student_id} got {mark} in course {course_id}")
+        for i, ((student_id, course_id), mark) in enumerate(self.marks.items()):
+            self.stdscr.addstr(i+1, 0, f"Student {student_id} got {mark} in course {course_id}")
 
-obj = StudentMarkManagement()
-obj.inputStudents()
-obj.inputCourses()
-obj.inputMarks()
-obj.calculateGPA()
-obj.listStudents()
-obj.listCourses()
-obj.showMarks()
+def main(stdscr):
+    obj = StudentMarkManagement(stdscr)
+    obj.inputStudents()
+    obj.inputCourses()
+    obj.inputMarks()
+    obj.calculateGPA()
+    obj.listStudents()
+    obj.listCourses()
+    obj.showMarks()
+
+curses.wrapper(main)

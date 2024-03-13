@@ -1,5 +1,3 @@
-
-        
 class Student:
     def __init__ (self, id, name, dob):
         self.id = id
@@ -13,57 +11,50 @@ class Course:
         self.name = name
         
 
-class Mark:
-    def __init__(self, student, course, mark):
-        self.student = student
-        self.course = course
-        self.mark = mark
-        
-
 class StudentMarkManagement:
     def __init__(self):
         self.students = []
         self.courses = []
         self.marks = {}
         
-        
-    
     def inputStudents(self): 
-        studentInfo = {}
-        studentInfo['id'] = input("Enter student id: ")
-        studentInfo['name'] = input("Enter student name: ")
-        studentInfo['dob'] = input("Enter student DOB: ")
-        self.students.append(Student(studentInfo))
+        numStudents = int(input("Enter number of students: "))
+        for _ in range(numStudents):
+            id = input("Enter student id: ")
+            name = input("Enter student name: ")
+            dob = input("Enter student DOB: ")
+            self.students.append(Student(id, name, dob))
         
     def inputCourses(self): 
-        courseInfo = {}
-        courseInfo['id'] = input("Enter course id: ")
-        courseInfo['name'] = input("Enter course name: ")
-        self.courses.append(Course(courseInfo))
+        numCourses = int(input("Enter number of courses: "))
+        for _ in range(numCourses):
+            id = input("Enter course id: ")
+            name = input("Enter course name: ")
+            self.courses.append(Course(id, name))
         
     def inputMarks(self):
-        for courseInfo in self.courses:
-             print(f"Entering marks for course {courseInfo.id}")
-        for studentInfo in self.students:
-                mark = float(input(f"Enter mark for student {studentInfo['id']}: "))
-                self.marks[studentInfo['id'], courseInfo['id']] = mark
+        for course in self.courses:
+            print(f"Entering marks for course {course.name}")
+            for student in self.students:
+                mark = float(input(f"Enter mark for student {student.name}: "))
+                self.marks[(student.id, course.id)] = mark
     
     def listStudents(self):
-        for studentInfo in self.students:
-            print(f"ID: {studentInfo['id']}, Name: {studentInfo['name']}, DOB: {studentInfo['dob']}")
+        for student in self.students:
+            print(f"ID: {student.id}, Name: {student.name}, DOB: {student.dob}")
         
     def listCourses(self):
-        for courseInfo in self.courses:
-            print(f"ID: {courseInfo['id']}, Name: {courseInfo['name']}")
+        for course in self.courses:
+            print(f"ID: {course.id}, Name: {course.name}")
     
     def showMarks(self):
-        for (studentInfo, courseInfo), mark in self.marks.items():
-            print(f"Student {studentInfo['name']} got {mark} in course {courseInfo['name']}")
+        for (student_id, course_id), mark in self.marks.items():
+            print(f"Student {student_id} got {mark} in course {course_id}")
         
         
     
 obj = StudentMarkManagement()
-obj.inputStudents
+obj.inputStudents()
 obj.inputCourses()
 obj.inputMarks()
 obj.listStudents()
